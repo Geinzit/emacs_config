@@ -1,3 +1,48 @@
+(require 'package)                   ; Bring in to the environment all package management functions
+
+;; A list of package repositories
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org"   . "https://orgmode.org/elpa/")
+                         ("elpa"  . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)                 ; Initializes the package system and prepares it to be used
+
+(unless package-archive-contents     ; Unless a package archive already exists,
+  (package-refresh-contents))        ; Refresh package contents so that Emacs knows which packages to load
+
+
+;; Initialize use-package on non-linux platforms
+(unless (package-installed-p 'use-package)        ; Unless "use-package" is installed, install "use-package"
+  (package-install 'use-package))
+(require 'use-package)                            ; Once it's installed, we load it using require
+
+;; Make sure packages are downloaded and installed before they are run
+;; also frees you from having to put :ensure t after installing EVERY PACKAGE.
+(setq use-package-always-ensure t)
+
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+(unless (package-installed-p 'quelpa-use-package)
+  (package-install 'quelpa-use-package))
+(require 'quelpa-use-package)
+
+
+(unless (package-installed-p 'ligature)
+  (package-install 'ligature))
+(require 'ligature)
+
+(unless (package-installed-p 'pdf-tools)
+  (package-install 'pdf-tools))
+(require 'pdf-tools)
+
+(unless (package-installed-p 'markdown-preview-mode)
+  (package-install 'markdown-preview-mode))
+(require 'markdown-preview-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -6,7 +51,7 @@
  '(custom-enabled-themes '(tsdh-dark))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(copilot editorconfig dash s quelpa-use-package quelpa chinese-py chinese-pyim markdown-preview-eww markdown-preview-mode markdown-mode haskell-mode pdf-tools tablist)))
+   '(copilot editorconfig dash s quelpa-use-package quelpa chinese-py chinese-pyim markdown-preview-mode markdown-mode haskell-mode pdf-tools tablist)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -17,14 +62,6 @@
 ;; tramp
 (setq tramp-verbose 10)
 
-(require 'quelpa-use-package)
-(require 'use-package)
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
 
 ;; fonts
 (set-face-attribute 'default nil :family "Fira Code" :height 120)
@@ -111,7 +148,6 @@
 
 (use-package markdown-mode
   :ensure t)
-(require 'markdown-preview-eww)
 (require 'markdown-preview-mode)
 (setq markdown-command "pandoc --standalone --from=markdown  --to=html5 --mathjax  --quiet")
 
